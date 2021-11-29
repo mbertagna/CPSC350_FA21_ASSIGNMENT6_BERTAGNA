@@ -1,0 +1,2 @@
+# CPSC350_FA21_ASSIGNMENT6_BERTAGNA
+Assignment 6: Student Database
