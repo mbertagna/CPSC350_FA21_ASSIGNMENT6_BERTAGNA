@@ -33,7 +33,6 @@ e. Assignment 6
    Makefile
 
 3) When the app starts up, it will require that one faculty is added prior to any students.
-   In its current state, everything works but the references to faculty advisees get screwed up if a student is deleted. Futhermore, RollBack sometimes works but sometimes does not. I couldn't seem to figure out the issue.
 
 4) zyBook – Data Structures (C++)
 - http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html
