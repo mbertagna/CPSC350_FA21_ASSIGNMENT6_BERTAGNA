@@ -27,11 +27,13 @@ e. Assignment 6
    Student.h
    Student.cpp
    main.cpp
+   Operation.h
+   Operationd.cpp   
    README.md
    Makefile
 
 3) When the app starts up, it will require that one faculty is added prior to any students.
-   In its current state, everything works but the references to faculty advisees get screwed up if a student is deleted. Futhermore, RollBack is not working properly.
+   In its current state, everything works but the references to faculty advisees get screwed up if a student is deleted. Futhermore, RollBack sometimes works but sometimes does not. I couldn't seem to figure out the issue.
 
 4) zyBook – Data Structures (C++)
 - http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html
@@ -51,8 +53,6 @@ e. Assignment 6
 - https://leetcode.com/problems/add-two-numbers/discuss/379157/Can%27t-compare-ListNode-type-with-NULL/340784/
 - https://www.eecs.umich.edu/courses/eecs380/HANDOUTS/cppBinaryFileIO-2.html
 - https://stackoverflow.com/questions/35184509/make-selected-block-of-text-uppercase
-- 
-
 
 5) make realclean
    make all

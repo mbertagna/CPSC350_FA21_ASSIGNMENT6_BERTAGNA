@@ -11,12 +11,14 @@
 
 #include <iostream>
 #include "DataBase.h"
+#include "Operation.h"
+#include <vector>
 using namespace std;
 
 class DataBaseManager{
-    private:
+    private:    
         DataBase *m_dataBase;
-        GenStack<DataBase*> *m_operations;//FIXME (look at Rahul comment)
+        vector<Operation> *m_operations;//FIXME (look at Rahul comment)
         
     public:
         // default constructor
@@ -42,6 +44,9 @@ class DataBaseManager{
 
         // checks if string is an +integer or 0
         bool isPosIntOrZero(string maybeInt);
+
+        // reverts beck to the last data base before an add or remove
+        void rollBack();
 };
 
 #endif

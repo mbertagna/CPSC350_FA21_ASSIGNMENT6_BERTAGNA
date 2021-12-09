@@ -1,14 +1,23 @@
+// a. Michael Bertagna
+// b. 2353491
+// c. bertagna@chapman.edu
+// d. CPSC 350-01
+// e. Assignment 6
+
+/* DataBaseManager.cpp is a a class which implements the elements of for managing a student-faculty database. */
 
 #include "DataBaseManager.h"
 
 // default constructor
 DataBaseManager::DataBaseManager(){
     m_dataBase = new DataBase();
+    m_operations = new vector<Operation>();
 }
 
 // destructor
 DataBaseManager::~DataBaseManager(){
     delete m_dataBase;
+    delete m_operations;
 }
 
 // allows the user to manage the database, prompting them for which operations they would like to perform
@@ -21,6 +30,11 @@ void DataBaseManager::manageDataBase(){
     string level;
     string dept;
     int numAdv;
+
+    string major;
+    double gpa;
+    int advisorId;
+    int id;
 
     cout << endl;
     cout << "WELCOME TO THE STUDENT-FACULTY DATABASE!" << endl;
@@ -60,31 +74,38 @@ void DataBaseManager::manageDataBase(){
         operationInt = stoi(operationStr);
 
         switch(operationInt){
-            case 1:
+            case 1:{
                 m_dataBase->printStudents();
-                break;
-            case 2:
+                break;}
+            case 2:{
                 m_dataBase->printFaculty();
-                break;
-            case 3:
+                break;}
+            case 3:{
                 m_dataBase->printStudentInfo(getInt('s'));
-                break;
-            case 4:
+                break;}
+            case 4:{
                 m_dataBase->printFacultyInfo(getInt('f'));
-                break;
-            case 5:
+                break;}
+            case 5:{
                 m_dataBase->printFacultyAdvisor(getInt('s'));
-                break;
-            case 6:
+                break;}
+            case 6:{
                 m_dataBase->printFacultyAdvisees(getInt('f'));
-                break;
-            case 7:
-                m_dataBase->addStudent(getStr('n'), getStr('l'), getStr('m'),getGpa(),getInt('a'));
-                break;
-            case 8:
+                break;}
+            case 7:{
+                name = getStr('n');
+                level = getStr('l');
+                major = getStr('m');
+                gpa = getGpa();
+                advisorId = getInt('a');
+                int id = m_dataBase->addStudent(name, level, major,gpa,advisorId);
+                if(id != -1)
+                    m_operations->push_back(Operation("ds",Student(id,name,level,major,gpa,advisorId)));
+                break;}
+            case 8:{
                 m_dataBase->deleteStudent(getInt('s'));
-                break;
-            case 9:
+                break;}
+            case 9:{
                 name = getStr('n');
                 level = getStr('l');
                 dept = getStr('d');
@@ -93,27 +114,31 @@ void DataBaseManager::manageDataBase(){
                 for(int i = 0 ; i < numAdv ; ++i){
                     advArr[i] = getInt('e');
                 }
-                m_dataBase->addFaculty(name,level,dept,advArr,numAdv);
-                break;
-            case 10:
+                int id = m_dataBase->addFaculty(name,level,dept,advArr,numAdv);
+                if(numAdv = 0)
+                    advArr = NULL;
+                if(id != -1)
+                    m_operations->push_back(Operation("df",Faculty(id,name,level,dept,advArr,numAdv)));
+                break;}
+            case 10:{
                 m_dataBase->deleteFaculty(getInt('f'));
-                break;
-            case 11:
+                break;}
+            case 11:{
                 m_dataBase->setAdvisor(getInt('s'),getInt('a'));
-                break;
-            case 12:
+                break;}
+            case 12:{
                 m_dataBase->removeAdvisee(getInt('f'),getInt('e'));
-                break;
-            case 13:
-                //FIXMEEEE
-                break;
-            case 14:
+                break;}
+            case 13:{
+                rollBack();
+                break;}
+            case 14:{
                 cout << "SAVING DATABASE." << endl;
                 m_dataBase->serialize();
                 exit = true;
                 cout << "DATABASE SAVED." << endl;
                 cout << "GOODBYE!" << endl;
-                break;
+                break;}
         }
     }
 }
@@ -252,4 +277,21 @@ string DataBaseManager::getStr(char type/* n = name , l = level , m = major , d 
             break;
     }
     return s;
+}
+
+// reverts beck to the last data base before an add or remove
+void DataBaseManager::rollBack(){
+    if(m_operations->size() != 0){
+        Operation op = m_operations->back();
+        m_operations->pop_back();
+        if(op.getType() == "ds"){
+            m_dataBase->deleteStudent(op.getStudent().getId());
+        }
+        if(op.getType() == "df"){
+            m_dataBase->deleteFaculty(op.getFaculty().getId());
+        }
+    }
+    else{
+        cout << "CANNOT ROLLBACK." << endl;
+    }
 }

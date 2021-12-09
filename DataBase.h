@@ -58,7 +58,7 @@ class DataBase{
         void printFacultyAdvisees(int facultyId);
 
         // adds a student
-        void addStudent(string name, string level, string major, double gpa, int advisorId);
+        int addStudent(string name, string level, string major, double gpa, int advisorId);
 
         // deletes a student
         void deleteStudent(int id);
@@ -67,7 +67,7 @@ class DataBase{
         void ensureAdviseeRefInteg(int adviseeId); 
 
         // adds a faculty
-        void addFaculty(string name, string level, string department, int *advisees, int numAdvisees);
+        int addFaculty(string name, string level, string department, int *advisees, int numAdvisees);
 
         // deletes a faculty
         void deleteFaculty(int id);

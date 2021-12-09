@@ -1,3 +1,10 @@
+// a. Michael Bertagna
+// b. 2353491
+// c. bertagna@chapman.edu
+// d. CPSC 350-01
+// e. Assignment 6
+
+/* DataBase.cpp is a a class which implements the elements of the a basic student-faculty database. */
 
 #include "DataBase.h"
 
@@ -226,13 +233,14 @@ void DataBase::printFacultyAdvisees(int facultyId){
 }
 
 // adds a student
-void DataBase::addStudent(string name, string level, string major, double gpa, int advisorId){//FIXME make id random and not dup (use contains)
+int DataBase::addStudent(string name, string level, string major, double gpa, int advisorId){//FIXME make id random and not dup (use contains)
     if(masterFaculty->contains(Faculty(advisorId, "", "", "", NULL, 0))){
-        masterStudent->insert(Student(generateStudentId(), name, level, major, gpa, advisorId));
+        int id = generateStudentId();
+        masterStudent->insert(Student(id, name, level, major, gpa, advisorId));
+        return id;
     }
-    else{
-        cout << "CANNOT PERFORM OPERATION: FACULTY ADVISOR WITH SPECIFIED ID DOES NOT EXIST." << endl;
-    }
+    cout << "CANNOT PERFORM OPERATION: FACULTY ADVISOR WITH SPECIFIED ID DOES NOT EXIST." << endl;
+    return -1;
 }
 
 // deletes a student
@@ -268,14 +276,16 @@ void DataBase::ensureAdviseeRefInteg(int adviseeId){//FIXME issue with same arra
 }
 
 // adds a faculty
-void DataBase::addFaculty(string name, string level, string department, int *advisees, int numAdvisees){//FIXME make id random and not dup (use contains)
+int DataBase::addFaculty(string name, string level, string department, int *advisees, int numAdvisees){//FIXME make id random and not dup (use contains)
     for(int i = 0 ; i < numAdvisees ; ++i){
         if(!(masterStudent->contains(Student(advisees[i], "", "", "", 0.0, 0)))){
             cout << "CANNOT PERFORM OPERATION: STUDENT(S) WITH SPECIFIED ID DOES NOT EXIST." << endl;
-            return;            
+            return -1;            
         }
     }
+    int id = generateFacultyId();
     masterFaculty->insert(Faculty(generateFacultyId(), name, level, department, advisees, numAdvisees));
+    return id;
 }
 
 // deletes a faculty

@@ -1,3 +1,10 @@
+// a. Michael Bertagna
+// b. 2353491
+// c. bertagna@chapman.edu
+// d. CPSC 350-01
+// e. Assignment 6
+
+/* Faculty.cpp is a class which implements the elements of the a basic faculty member (inherits from person). */
 
 #include "Faculty.h"
 

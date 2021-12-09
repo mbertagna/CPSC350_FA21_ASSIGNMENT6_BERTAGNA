@@ -1,3 +1,10 @@
+// a. Michael Bertagna
+// b. 2353491
+// c. bertagna@chapman.edu
+// d. CPSC 350-01
+// e. Assignment 6
+
+/* Student.cpp is a class which implements the elements of the a basic student (inherits from person). */
 
 #include "Student.h"
 
