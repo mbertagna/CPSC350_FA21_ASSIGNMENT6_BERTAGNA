@@ -2,7 +2,7 @@
 Assignment 6: Student Database
 ***–| add german-cu & Ander428 as collaborators |–***
 
-NOTE: I AM USING TWO LATE DAYS ON THIS ASSIGNMENT.
+NOTE: I AM USING TWO LATE DAYS ON THIS ASSIGNMENT. SEE MY EMAIL IF IT APPEARS THAT I HAVE ONLY ONE.
 
 1)
 a. Michael Bertagna
