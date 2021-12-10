@@ -4,7 +4,7 @@
 // d. CPSC 350-01
 // e. Assignment 6
 
-/* Person.cpp is a base class which implements the elements of the a basic person. */
+/* Person.cpp is a base class which implements the elements of the a basic person who has an id, name, and level. */
 
 #include "Person.h"
 

@@ -12,13 +12,13 @@
 Operation::Operation(){}
 
 // overloaded constructor
-Operation::Operation(string type/*as,rs*/, Student s){
+Operation::Operation(string type/*as = add student,rs = remove student*/, Student s){
     m_type = type;
     m_s = s;
 }
 
 // overloaded constructor
-Operation::Operation(string type/*af,df*/, Faculty f){
+Operation::Operation(string type/*af = add faculty,df = remove faculty*/, Faculty f){
     m_type = type;
     m_f = f;
 }

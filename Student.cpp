@@ -4,7 +4,7 @@
 // d. CPSC 350-01
 // e. Assignment 6
 
-/* Student.cpp is a class which implements the elements of the a basic student (inherits from person). */
+/* Student.cpp is a class which implements the elements of the a basic student, including a major, gpa, and advisor id (inherits from Person). */
 
 #include "Student.h"
 
@@ -59,7 +59,7 @@ void Student::setAdvisorId(int advisorId){
 // overloaded method for <<
 ostream& operator<<(ostream& os, Student other){
     Student temp = other;
-    cout << "ID: " << temp.getId() << endl;
+    cout << "STUDENT ID: " << temp.getId() << endl;
     cout << "   NAME: " << temp.getName() << endl;
     cout << "   LEVEL: " << temp.getLevel() << endl;
     cout << "   MAJOR: " << temp.getMajor() << endl;

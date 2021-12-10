@@ -18,7 +18,8 @@ using namespace std;
 class DataBaseManager{
     private:    
         DataBase *m_dataBase;
-        vector<Operation> *m_operations;//FIXME (look at Rahul comment)
+        vector<Operation> *m_operations;
+        int numRB;
         
     public:
         // default constructor

@@ -134,7 +134,7 @@ T* BST<T>::getMin(){
 
 template <class T>
 T* BST<T>::getMax(){
-    cout << "1" << endl;
+
     TreeNode<T> *current = root;//start at root
 
     if(root == NULL){
@@ -142,13 +142,11 @@ T* BST<T>::getMax(){
         return NULL;
     }
 
-    cout << "2" << endl;
 
     while(current->right != NULL){
         current = current->right;
     }
 
-    cout << "3" << endl;
 
     return &(current->key);
 }

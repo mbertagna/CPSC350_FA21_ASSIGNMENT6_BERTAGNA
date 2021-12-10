@@ -12,10 +12,10 @@
 #include <cstdlib> //for srand/rand
 #include <time.h> //for time
 #include <fstream>
+#include <vector>
 #include "BST.h"
 #include "Student.h"
 #include "Faculty.h"
-#include "GenStack.h"
 using namespace std;
 
 class DataBase{
@@ -60,8 +60,11 @@ class DataBase{
         // adds a student
         int addStudent(string name, string level, string major, double gpa, int advisorId);
 
+        // adds a student
+        int addStudentRB(int id, string name, string level, string major, double gpa, int advisorId);
+
         // deletes a student
-        void deleteStudent(int id);
+        Student deleteStudent(int id);
 
         // removes a specified advisee from all faculty
         void ensureAdviseeRefInteg(int adviseeId); 
@@ -69,8 +72,11 @@ class DataBase{
         // adds a faculty
         int addFaculty(string name, string level, string department, int *advisees, int numAdvisees);
 
+        // adds a faculty
+        int addFacultyRB(int id, string name, string level, string department, int *advisees, int numAdvisees);
+
         // deletes a faculty
-        void deleteFaculty(int id);
+        Faculty deleteFaculty(int id);
 
         // prompts the user to change the advisor of any student who's faculty advisor has been deleted
         void ensureAdvisorRefInteg(int advisorId);
@@ -89,6 +95,12 @@ class DataBase{
 
         // returns a 7 digit numerical faculty id
         int generateFacultyId();
+
+        // returns true if no students
+        bool zeroStudents();
+
+        // checks if string is an +integer or 0
+        bool isPosIntOrZero(string maybeInt);
 };
 
 #endif

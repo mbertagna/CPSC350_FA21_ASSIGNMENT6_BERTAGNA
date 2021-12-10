@@ -4,7 +4,7 @@
 // d. CPSC 350-01
 // e. Assignment 6
 
-/* Faculty.cpp is a class which implements the elements of the a basic faculty member (inherits from person). */
+/* Faculty.cpp is a class which implements the elements of the a basic faculty member, including a department and a list of advisees (inherits from Person). */
 
 #include "Faculty.h"
 
@@ -21,7 +21,7 @@ Faculty::Faculty(int id, string name, string level, string department, int* advi
 // overloaded method for <<
 ostream& operator<<(ostream& os, Faculty other){
     Faculty temp = other;
-    cout << "ID: " << temp.getId() << endl;
+    cout << "FACULTY ID: " << temp.getId() << endl;
     cout << "   NAME: " << temp.getName() << endl;
     cout << "   LEVEL: " << temp.getLevel() << endl;
     cout << "   DEPARTMENT: " << temp.getDepartment() << endl;

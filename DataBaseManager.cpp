@@ -4,7 +4,23 @@
 // d. CPSC 350-01
 // e. Assignment 6
 
-/* DataBaseManager.cpp is a a class which implements the elements of for managing a student-faculty database. */
+/* DataBaseManager.cpp is a class which implements a manager for a student-faculty database. The user is able to perform 14 different opertations on the
+data base:
+1  - DISPLAY ALL STUDENTS AND THEIR INFORMATION (SORTED BY ASCENDING ID #).
+2  - DISPLAY ALL FACULTY MEMBERS AND THEIR INFORMATION (SORTED BY ASCENDING ID #).
+3  - FIND AND DISPLAY A STUDENT'S INFORMATION BY STUDENT ID #.
+4  - FIND AND DISPLAY A FACULTY MEMEBER'S INFORMATION BY FACULTY ID #.
+5  - DISPLAY THE INFO OF A STUDENT'S FACULTY ADVISOR BY STUDENT ID #.
+6  - DISPLAY THE INFO OF A FACULTY MEMEBER'S STUDENT ADVISEES BY FACULTY ID #.
+7  - ADD A NEW STUDENT.
+8  - DELETE A STUDENT BY ID #.
+9  - ADD A NEW FACULTY MEMBER.
+10 - DELETE A FACULTY MEMBER BY ID #.
+11 - CHANGE A STUDENT’S FACULTY ADVISOR BY STUDENT ID # AND THE NEW FACULTY ID #.
+12 - REMOVE A STUDENT ADVISEE FROM A FACULTY MEMBER GIVEN THE ID #'S OF THE FACULTY MEMBER AND THE STUDENT ADVISEE.
+13 - ROLLBACK.
+14 - EXIT.
+ */
 
 #include "DataBaseManager.h"
 
@@ -12,6 +28,7 @@
 DataBaseManager::DataBaseManager(){
     m_dataBase = new DataBase();
     m_operations = new vector<Operation>();
+    numRB = 5;
 }
 
 // destructor
@@ -42,20 +59,20 @@ void DataBaseManager::manageDataBase(){
     while(exit == false){
         cout << endl;
         cout << "PLEASE SELECT AN OPERATION FROM THE LIST BY INPUTTING ITS CORRESPONDING NUMBER: " << endl;
-        cout << "1  – DISPLAY ALL STUDENTS AND THEIR INFORMATION (SORTED BY ASCENDING ID #)." << endl;
-        cout << "2  – DISPLAY ALL FACULTY MEMBERS AND THEIR INFORMATION (SORTED BY ASCENDING ID #)." << endl;
-        cout << "3  – FIND AND DISPLAY A STUDENT'S INFORMATION BY STUDENT ID #." << endl;
-        cout << "4  – FIND AND DISPLAY A FACULTY MEMEBER'S INFORMATION BY FACULTY ID #." << endl;
-        cout << "5  – DISPLAY THE INFO OF A STUDENT'S FACULTY ADVISOR BY STUDENT ID #." << endl;
-        cout << "6  – DISPLAY THE INFO OF A FACULTY MEMEBER'S STUDENT ADVISEES BY FACULTY ID #." << endl;
-        cout << "7  – ADD A NEW STUDENT." << endl;
-        cout << "8  – DELETE A STUDENT BY ID #." << endl;
-        cout << "9  – ADD A NEW FACULTY MEMBER." << endl;
-        cout << "10 – DELETE A FACULTY MEMBER BY ID #." << endl;
-        cout << "11 – CHANGE A STUDENT’S FACULTY ADVISOR BY STUDENT ID # AND THE NEW FACULTY ID #." << endl;
-        cout << "12 – REMOVE A STUDENT ADVISEE FROM A FACULTY MEMBER GIVEN THE ID #'S OF THE FACULTY MEMBER AND THE STUDENT ADVISEE." << endl;
-        cout << "13 – ROLLBACK." << endl;
-        cout << "14 – EXIT." << endl;
+        cout << "1  - DISPLAY ALL STUDENTS AND THEIR INFORMATION (SORTED BY ASCENDING ID #)." << endl;
+        cout << "2  - DISPLAY ALL FACULTY MEMBERS AND THEIR INFORMATION (SORTED BY ASCENDING ID #)." << endl;
+        cout << "3  - FIND AND DISPLAY A STUDENT'S INFORMATION BY STUDENT ID #." << endl;
+        cout << "4  - FIND AND DISPLAY A FACULTY MEMEBER'S INFORMATION BY FACULTY ID #." << endl;
+        cout << "5  - DISPLAY THE INFO OF A STUDENT'S FACULTY ADVISOR BY STUDENT ID #." << endl;
+        cout << "6  - DISPLAY THE INFO OF A FACULTY MEMEBER'S STUDENT ADVISEES BY FACULTY ID #." << endl;
+        cout << "7  - ADD A NEW STUDENT." << endl;
+        cout << "8  - DELETE A STUDENT BY ID #." << endl;
+        cout << "9  - ADD A NEW FACULTY MEMBER." << endl;
+        cout << "10 - DELETE A FACULTY MEMBER BY ID #." << endl;
+        cout << "11 - CHANGE A STUDENT'S FACULTY ADVISOR BY STUDENT ID # AND THE NEW FACULTY ID #." << endl;
+        cout << "12 - REMOVE A STUDENT ADVISEE FROM A FACULTY MEMBER GIVEN THE ID #'S OF THE FACULTY MEMBER AND THE STUDENT ADVISEE." << endl;
+        cout << "13 - ROLLBACK." << endl;
+        cout << "14 - EXIT." << endl;
 
         cout << endl;
 
@@ -99,11 +116,19 @@ void DataBaseManager::manageDataBase(){
                 gpa = getGpa();
                 advisorId = getInt('a');
                 int id = m_dataBase->addStudent(name, level, major,gpa,advisorId);
-                if(id != -1)
-                    m_operations->push_back(Operation("ds",Student(id,name,level,major,gpa,advisorId)));
+                if(id != -1){//for rollback
+                    m_operations->push_back(Operation("ds",Student(id,name,level,major,gpa,advisorId)));//add opposite operation
+                    if(numRB < 5)
+                        ++numRB;
+                }
                 break;}
             case 8:{
-                m_dataBase->deleteStudent(getInt('s'));
+                Student s = m_dataBase->deleteStudent(getInt('s'));
+                if(s.getId() != -1){//for rollback
+                    m_operations->push_back(Operation("as",s));//add opposite operation
+                    if(numRB < 5)
+                        ++numRB;
+                }
                 break;}
             case 9:{
                 name = getStr('n');
@@ -117,17 +142,29 @@ void DataBaseManager::manageDataBase(){
                 int id = m_dataBase->addFaculty(name,level,dept,advArr,numAdv);
                 if(numAdv = 0)
                     advArr = NULL;
-                if(id != -1)
-                    m_operations->push_back(Operation("df",Faculty(id,name,level,dept,advArr,numAdv)));
+                if(id != -1){//for rollback
+                    m_operations->push_back(Operation("df",Faculty(id,name,level,dept,advArr,numAdv)));//add opposite operation
+                    if(numRB < 5)
+                        ++numRB;
+                }
                 break;}
             case 10:{
-                m_dataBase->deleteFaculty(getInt('f'));
+                Faculty f = m_dataBase->deleteFaculty(getInt('f'));
+                if(f.getId() != -1){//for rollback
+                    m_operations->push_back(Operation("af",f));//add opposite operation
+                    if(numRB < 5)
+                        ++numRB;
+                }
                 break;}
             case 11:{
-                m_dataBase->setAdvisor(getInt('s'),getInt('a'));
+                int s = getInt('s');
+                int a = getInt('a');
+                m_dataBase->setAdvisor(s,a);
                 break;}
             case 12:{
-                m_dataBase->removeAdvisee(getInt('f'),getInt('e'));
+                int f = getInt('f');
+                int e = getInt('e');
+                m_dataBase->removeAdvisee(f,e);
                 break;}
             case 13:{
                 rollBack();
@@ -139,6 +176,13 @@ void DataBaseManager::manageDataBase(){
                 cout << "DATABASE SAVED." << endl;
                 cout << "GOODBYE!" << endl;
                 break;}
+        }
+        if(exit != true){
+            cout << "PRESS ENTER TO PERFORM ANOTHER OPERATION." << endl;
+            cout << endl;
+            cin.get();//wait for user to press enter
+            cin.get();
+            cout << "*****************************************************************************************" << endl;
         }
     }
 }
@@ -185,7 +229,7 @@ double DataBaseManager::getGpa(){
     return std::stod(gpa);
 }
 
-// gets an integer from the user//FIXME when alpha inputted
+// gets an integer from the user
 int DataBaseManager::getInt(char type/* s = student id , f = faculty id , n = number of advisees , a = advisor id , e = advisee id*/){
     string i = "1";
     switch(type){
@@ -281,14 +325,27 @@ string DataBaseManager::getStr(char type/* n = name , l = level , m = major , d 
 
 // reverts beck to the last data base before an add or remove
 void DataBaseManager::rollBack(){
-    if(m_operations->size() != 0){
+    if((m_operations->size() != 0) && (numRB != 0)){
         Operation op = m_operations->back();
         m_operations->pop_back();
-        if(op.getType() == "ds"){
-            m_dataBase->deleteStudent(op.getStudent().getId());
+        if(op.getType() == "as"){
+            m_dataBase->addStudentRB(op.getStudent().getId(),op.getStudent().getName(),op.getStudent().getLevel(),op.getStudent().getMajor(),op.getStudent().getGpa(),op.getStudent().getAdvisorId());
+            --numRB;
         }
-        if(op.getType() == "df"){
+        else if(op.getType() == "af"){
+            m_dataBase->addFacultyRB(op.getFaculty().getId(),op.getFaculty().getName(),op.getFaculty().getLevel(),op.getFaculty().getDepartment(),op.getFaculty().getAdvisees(),op.getFaculty().getNumAdvisees());
+            --numRB;
+        }
+        else if(op.getType() == "ds"){
+            m_dataBase->deleteStudent(op.getStudent().getId());
+            --numRB;
+        }
+        else if(op.getType() == "df" && !(m_dataBase->oneFaculty()) && !(m_dataBase->zeroStudents())){
             m_dataBase->deleteFaculty(op.getFaculty().getId());
+            --numRB;
+        }
+        else{
+            cout << "CANNOT ROLLBACK. CANNOT DELETE LAST FACULTY." << endl;
         }
     }
     else{

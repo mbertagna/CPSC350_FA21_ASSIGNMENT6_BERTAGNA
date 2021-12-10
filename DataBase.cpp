@@ -4,7 +4,8 @@
 // d. CPSC 350-01
 // e. Assignment 6
 
-/* DataBase.cpp is a a class which implements the elements of the a basic student-faculty database. */
+/* DataBase.cpp is a class which implements the elements of the a basic student-faculty database. It contains two tables masterFaculty and masterStudent 
+which hold data about fauclty and students, respectively. The class allows for the modification of these tables and saves them upon program end. */
 
 #include "DataBase.h"
 
@@ -26,7 +27,7 @@ void DataBase::deserialize(){
 
     ifstream inFSF;// input file stream
 
-    inFSF.open("facultyTable.txt");// open input file
+    inFSF.open("facultyTable");// open input file
 
     // if input file cannot be opened print error to user
     if (inFSF.is_open()) {
@@ -38,9 +39,8 @@ void DataBase::deserialize(){
         string f_numAdvisees = "";
         string *f_adviseesIds;
         int *f_adviseesIdsInt;
-        bool breakLoop = false;
 
-        while(!inFSF.fail()){
+        while(!inFSF.fail()){//loop through data and grab faculty (each one taking up 5 + numAdvisees lines until fail)
             getline(inFSF, f_id);
             if(f_id == "\n" || f_id == ""){
                 break;
@@ -72,7 +72,9 @@ void DataBase::deserialize(){
             }
             masterFaculty->insert(Faculty(stoi(f_id),f_name,f_level,f_dept,f_adviseesIdsInt,stoi(f_numAdvisees)));
         }
-        cout << "FACULTY MEMEBER(S) FROM PREVIOUS SESSION RESTORED." << endl;
+        if(!(masterFaculty->isEmpty())){
+            cout << "FACULTY MEMEBER(S) FROM PREVIOUS SESSION RESTORED." << endl;
+        }
     }
     inFSF.close();// close input file stream  
 
@@ -80,7 +82,7 @@ void DataBase::deserialize(){
 
     ifstream inFSS;// input file stream
 
-    inFSS.open("studentTable.txt");// open input file
+    inFSS.open("studentTable");// open input file
 
     // if input file cannot be opened print error to user
     if (inFSS.is_open()) {
@@ -92,7 +94,7 @@ void DataBase::deserialize(){
         string s_gpa = "";
         string s_advisiorId = "";
 
-        while(!inFSS.fail()){
+        while(!inFSS.fail()){//loop through data and grab student (each one taking up 6 lines until fail)
             getline(inFSS, s_id);
             if(s_id == "\n" || s_id == "")
                 break;
@@ -107,8 +109,9 @@ void DataBase::deserialize(){
                 break;
             masterStudent->insert(Student(stoi(s_id),s_name,s_level,s_major,std::stod(s_gpa),stoi(s_advisiorId)));
         }
-
-        cout << "STUDENT(S) FROM PREVIOUS SESSION RESTORED." << endl;
+        if(!(masterStudent->isEmpty())){
+            cout << "STUDENT(S) FROM PREVIOUS SESSION RESTORED." << endl;
+        }
     }
     inFSS.close();// close input file stream
 }
@@ -117,7 +120,7 @@ void DataBase::deserialize(){
 void DataBase::serialize(){
     ofstream outFSF;// output file stream for faculty
 
-    outFSF.open("facultyTable.txt");// open output file and overwrite
+    outFSF.open("facultyTable");// open output file and overwrite
 
     // if output file cannot be opened print error to user and do nothing else
     if (!outFSF.is_open()) {
@@ -133,7 +136,7 @@ void DataBase::serialize(){
 
     ofstream outFSS;// output file stream for students
 
-    outFSS.open("studentTable.txt");// open output file and overwrite
+    outFSS.open("studentTable");// open output file and overwrite
 
     // if output file cannot be opened print error to user and do nothing else
     if (!outFSS.is_open()) {
@@ -198,8 +201,8 @@ void DataBase::printFacultyAdvisor(int studentId){
         Student tempS = masterStudent->deleteNodeReturnValue(Student(studentId, "", "", "", 0.0, 0));
         Faculty tempF = masterFaculty->deleteNodeReturnValue(Faculty(tempS.getAdvisorId(), "", "", "", NULL, 0));
         cout << tempF << endl;
-        masterStudent->insert(tempS);
         masterFaculty->insert(tempF);
+        masterStudent->insert(tempS);
     }
     else{
         cout << "CANNOT PERFORM OPERATION: STUDENT WITH SPECIFIED ID DOES NOT EXIST." << endl;
@@ -222,7 +225,7 @@ void DataBase::printFacultyAdvisees(int facultyId){
                 ++numZero;
             }
         }
-        if(numZero = tempF.getNumAdvisees()){
+        if(numZero == tempF.getNumAdvisees()){
             cout << "FACULTY WITH SPECIFIED ID DOES NOT HAVE ANY ADVISEES." << endl;
         }
         masterFaculty->insert(tempF);
@@ -233,7 +236,7 @@ void DataBase::printFacultyAdvisees(int facultyId){
 }
 
 // adds a student
-int DataBase::addStudent(string name, string level, string major, double gpa, int advisorId){//FIXME make id random and not dup (use contains)
+int DataBase::addStudent(string name, string level, string major, double gpa, int advisorId){
     if(masterFaculty->contains(Faculty(advisorId, "", "", "", NULL, 0))){
         int id = generateStudentId();
         masterStudent->insert(Student(id, name, level, major, gpa, advisorId));
@@ -243,19 +246,36 @@ int DataBase::addStudent(string name, string level, string major, double gpa, in
     return -1;
 }
 
+// adds a student
+int DataBase::addStudentRB(int id,string name, string level, string major, double gpa, int advisorId){
+    if(masterFaculty->contains(Faculty(advisorId, "", "", "", NULL, 0))){
+        masterStudent->insert(Student(id, name, level, major, gpa, advisorId));
+        return id;
+    }
+    cout << "CANNOT PERFORM OPERATION: FACULTY ADVISOR WITH SPECIFIED ID DOES NOT EXIST." << endl;
+    return -1;
+}
+
 // deletes a student
-void DataBase::deleteStudent(int id){
+Student DataBase::deleteStudent(int id){
+    if(masterStudent->isEmpty()){
+        cout << "CANNOT PERFORM OPERATION: NO STUDENTS IN DATABASE." << endl;
+        return Student(-1,"","","",0.0,0);
+    }
     if(masterStudent->contains(Student(id, "", "", "", 0.0, 0))){
-        masterStudent->deleteNode(Student(id, "", "", "", 0.0, 0));
+        Student s = masterStudent->deleteNodeReturnValue(Student(id, "", "", "", 0.0, 0));
         ensureAdviseeRefInteg(id);
+        return s;
     }
     else{
         cout << "CANNOT PERFORM OPERATION: STUDENT WITH SPECIFIED ID DOES NOT EXIST." << endl;
+        return Student(-1,"","","",0.0,0);
     }
+    return Student(-1,"","","",0.0,0);
 }
 
 // removes a specified advisee from all faculty
-void DataBase::ensureAdviseeRefInteg(int adviseeId){//FIXME issue with same array being used; try approach with delete and add faculty in one step with deleteAdvisee method
+void DataBase::ensureAdviseeRefInteg(int adviseeId){
     Faculty tempF;
     BST<Faculty> *checkedFaculty = new BST<Faculty>();
 
@@ -265,18 +285,18 @@ void DataBase::ensureAdviseeRefInteg(int adviseeId){//FIXME issue with same arra
             if((tempF.getAdvisees()[i]) == adviseeId){
                 tempF.getAdvisees()[i] = 0;
             }
-            checkedFaculty->insert(tempF);
         }
+        checkedFaculty->insert(tempF);
     }
-
     while(!(checkedFaculty->isEmpty())){
-        masterFaculty->insert((checkedFaculty->deleteRootNodeReturnValue()));
+        tempF = checkedFaculty->deleteRootNodeReturnValue();
+        masterFaculty->insert(tempF);
     }
     delete checkedFaculty;
 }
 
 // adds a faculty
-int DataBase::addFaculty(string name, string level, string department, int *advisees, int numAdvisees){//FIXME make id random and not dup (use contains)
+int DataBase::addFaculty(string name, string level, string department, int *advisees, int numAdvisees){
     for(int i = 0 ; i < numAdvisees ; ++i){
         if(!(masterStudent->contains(Student(advisees[i], "", "", "", 0.0, 0)))){
             cout << "CANNOT PERFORM OPERATION: STUDENT(S) WITH SPECIFIED ID DOES NOT EXIST." << endl;
@@ -288,20 +308,40 @@ int DataBase::addFaculty(string name, string level, string department, int *advi
     return id;
 }
 
+// adds a faculty
+int DataBase::addFacultyRB(int id, string name, string level, string department, int *advisees, int numAdvisees){
+    for(int i = 0 ; i < numAdvisees ; ++i){
+        if(!(masterStudent->contains(Student(advisees[i], "", "", "", 0.0, 0)))){
+            cout << "CANNOT PERFORM OPERATION: STUDENT(S) WITH SPECIFIED ID DOES NOT EXIST." << endl;
+            return -1;            
+        }
+    }
+    masterFaculty->insert(Faculty(generateFacultyId(), name, level, department, advisees, numAdvisees));
+    return id;
+}
+
 // deletes a faculty
-void DataBase::deleteFaculty(int id){
+Faculty DataBase::deleteFaculty(int id){
+    if(masterFaculty->isEmpty()){
+        cout << "CANNOT PERFORM OPERATION: NO FACULTY IN DATABASE." << endl;
+        return Faculty(-1, "", "", "", NULL, 0);
+    }
     if((!(oneFaculty())) || masterStudent->isEmpty()){
         if(masterFaculty->contains(Faculty(id, "", "", "", NULL, 0))){
-            masterFaculty->deleteNode(Faculty(id, "", "", "", NULL, 0));
+            Faculty f = masterFaculty->deleteNodeReturnValue(Faculty(id, "", "", "", NULL, 0));
             ensureAdvisorRefInteg(id);
+            return f;
         }
         else{
             cout << "CANNOT PERFORM OPERATION: FACULTY WITH SPECIFIED ID DOES NOT EXIST." << endl;
+            return Faculty(-1, "", "", "", NULL, 0);
         }
     }
     else{
         cout << "CANNOT PERFORM OPERATION: ONLY ONE FACULTY EXISTS. DATABASE WITH STUDENTS MUST HAVE AT LEAST ONE FACULTY." << endl;
+        return Faculty(-1, "", "", "", NULL, 0);
     }
+    return Faculty(-1, "", "", "", NULL, 0);
 }
 
 // returns true if only one faculty left in master faculty tree
@@ -315,31 +355,41 @@ bool DataBase::oneFaculty(){
     return oneValue;
 }
 
+// returns true if no students
+bool DataBase::zeroStudents(){
+    return masterStudent->isEmpty();
+}
+
 // prompts the user to change the advisor of any student who's faculty advisor has been deleted
 void DataBase::ensureAdvisorRefInteg(int advisorId){
     Student tempS;
-    GenStack<Student> *checkedStudents = new GenStack<Student>();
+    vector<Student> *checkedStudents = new vector<Student>();
 
     while(!(masterStudent->isEmpty())){
         tempS = masterStudent->deleteRootNodeReturnValue();
-        int newAdvisior = 0;
+        string newAdvisior = "";
         if((tempS.getAdvisorId()) == advisorId){
-            cout << "THE FOLLOWING STUDENT DOES NOT HAVE A VALID ADVISOR, AS FACULTY WITH ID = " + advisorId;
+            cout << "THE FOLLOWING STUDENT DOES NOT HAVE A VALID ADVISOR, AS FACULTY WITH ID = " + to_string(advisorId);
             cout << " HAS BEEN DELETED: " << endl;
             cout << tempS << endl;
             cout << "PLEASE ENTER A VALID ID OF THE DESIRED NEW ADVISOR FOR THE STUDENT: ";
-            cin >> newAdvisior;//FIXME? with stoi if error with NaNs
-            while(!(masterFaculty->contains(Faculty(newAdvisior, "", "", "", NULL, 0)))){
+            cin >> newAdvisior;
+            while(!isPosIntOrZero(newAdvisior)){
                 cout << "PLEASE ENTER A VALID ID OF THE DESIRED NEW ADVISOR FOR THE STUDENT: ";
-                cin >> newAdvisior;//FIXME? with stoi if error with NaNs
+                cin >> newAdvisior;
+                if(isPosIntOrZero(newAdvisior)){
+                    if(!(masterFaculty->contains(Faculty(stoi(newAdvisior), "", "", "", NULL, 0))))
+                    newAdvisior = -1;
+                }
             }
-            tempS.setAdvisorId(newAdvisior);
+            tempS.setAdvisorId(stoi(newAdvisior));
         }
-        checkedStudents->push(tempS);
+        checkedStudents->push_back(tempS);
     }
 
-    while(!(checkedStudents->isEmpty())){
-        masterStudent->insert(checkedStudents->pop());
+    while(!(checkedStudents->size()==0)){
+        masterStudent->insert(checkedStudents->back());
+        checkedStudents->pop_back();
     }
     delete checkedStudents;
 }
@@ -402,4 +452,20 @@ int DataBase::generateFacultyId(){
         id = rand() % 10000000;
     }
     return id;
+}
+
+// checks if string is an +integer or 0
+bool DataBase::isPosIntOrZero(string maybeInt){
+    if(maybeInt.length() == 0)//return false if string has length zero
+        return false;
+
+    for(int i = 0; i < maybeInt.length(); ++i){//loop through chars in string
+        if(!(isdigit(maybeInt[i])))//if char is not numeric return false
+            return false;
+    }
+
+    if(std::stoi(maybeInt) < 0)//if int is not > 0
+        return false;
+
+    return true;//if all numeric and > 0
 }

@@ -2,7 +2,7 @@
 Assignment 6: Student Database
 ***–| add german-cu & Ander428 as collaborators |–***
 
-NOTE: I AM USING ONE LATE DAY ON THIS ASSIGNMENT.
+NOTE: I AM USING TWO LATE DAYS ON THIS ASSIGNMENT.
 
 1)
 a. Michael Bertagna
@@ -12,10 +12,6 @@ d. CPSC 350-01
 e. Assignment 6
 
 2) BST.h
-   LinkedList.h
-   List.h
-   ListInterface.h
-   GenStack.h
    DataBase.h
    DataBase.cpp
    DataBaseManager.h
