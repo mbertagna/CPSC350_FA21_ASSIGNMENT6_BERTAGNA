@@ -340,12 +340,16 @@ void DataBaseManager::rollBack(){
             m_dataBase->deleteStudent(op.getStudent().getId());
             --numRB;
         }
-        else if(op.getType() == "df" && !(m_dataBase->oneFaculty()) && !(m_dataBase->zeroStudents())){
+        else if((op.getType() == "df") && !(m_dataBase->oneFaculty())){
+            m_dataBase->deleteFaculty(op.getFaculty().getId());
+            --numRB;
+        }
+        else if((op.getType() == "df") && (m_dataBase->oneFaculty()) && (m_dataBase->zeroStudents())){
             m_dataBase->deleteFaculty(op.getFaculty().getId());
             --numRB;
         }
         else{
-            cout << "CANNOT ROLLBACK. CANNOT DELETE LAST FACULTY." << endl;
+            cout << "CANNOT ROLLBACK. CANNOT DELETE LAST FACULTY IF STUDENTS IN DATABASE." << endl;
         }
     }
     else{
